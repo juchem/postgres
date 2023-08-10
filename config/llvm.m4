@@ -13,6 +13,7 @@ AC_DEFUN([PGAC_LLVM_SUPPORT],
   AC_REQUIRE([AC_PROG_AWK])
 
   AC_ARG_VAR(LLVM_CONFIG, [path to llvm-config command])
+  AC_ARG_VAR(LLVM_LINK_MODE, [optional link mode for LLVM])
   PGAC_PATH_PROGS(LLVM_CONFIG, llvm-config llvm-config-7 llvm-config-6.0 llvm-config-5.0 llvm-config-4.0 llvm-config-3.9)
 
   # no point continuing if llvm wasn't found
@@ -52,7 +53,7 @@ AC_DEFUN([PGAC_LLVM_SUPPORT],
     esac
   done
 
-  for pgac_option in `$LLVM_CONFIG --ldflags`; do
+  for pgac_option in `$LLVM_CONFIG --ldflags $LLVM_LINK_MODE`; do
     case $pgac_option in
       -L*) LDFLAGS="$LDFLAGS $pgac_option";;
     esac
@@ -84,7 +85,7 @@ AC_DEFUN([PGAC_LLVM_SUPPORT],
   # And then get the libraries that need to be linked in for the
   # selected components.  They're large libraries, we only want to
   # link them into the LLVM using shared library.
-  for pgac_option in `$LLVM_CONFIG --libs --system-libs $pgac_components`; do
+  for pgac_option in `$LLVM_CONFIG --libs --system-libs $LLVM_LINK_MODE $pgac_components`; do
     case $pgac_option in
       -l*) LLVM_LIBS="$LLVM_LIBS $pgac_option";;
     esac

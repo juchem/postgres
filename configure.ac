@@ -403,12 +403,16 @@ AC_SUBST(SUN_STUDIO_CC)
 # LLVM
 #
 # Checked early because subsequent tests depend on it.
-PGAC_ARG_BOOL(with, llvm, no, [build with LLVM based JIT support],
-              [AC_DEFINE([USE_LLVM], 1, [Define to 1 to build with LLVM based JIT support. (--with-llvm)])])
+PGAC_ARG_OPTARG(with, llvm,
+                [LINKMODE],
+                [build with LLVM based JIT support, optionally using link mode (static,shared)],
+                [LLVM_LINK_MODE=],
+                [LLVM_LINK_MODE=--link-$withval])
+AC_MSG_RESULT([$with_llvm])
 AC_SUBST(with_llvm)
 dnl must use AS_IF here, else AC_REQUIRES inside PGAC_LLVM_SUPPORT malfunctions
 AS_IF([test "$with_llvm" = yes], [
-  PGAC_LLVM_SUPPORT()
+  PGAC_LLVM_SUPPORT(with_llvm, LLVM_LINK_MODE)
 ]) # fi
 
 
